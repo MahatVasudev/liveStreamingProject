@@ -1,0 +1,16 @@
+# Ignore dependencies (they will be installed inside Docker)
+**/node_modules
+npm-debug.log
+yarn.lock
+.pnpm-store
+*.cache
+
+# Ignore build artifacts (we'll build inside Docker)
+build/
+dist/
+
+# Ignore Git and IDE files
+.git
+.gitignore
+.vscode/
+.idea/
