@@ -1,22 +1,48 @@
 package api
 
 import (
-	"flag"
-	"os"
+	"database/sql"
+
+	"github.com/MahatVasudev/liveStreamingProject/server/services/user"
+	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
-var (
-	addr = flag.String("addr", ":", os.Getenv("PORT"))
-	cert = flag.String("cert", "", "")
-	key  = flag.String("key", "", "")
-)
+//
+// var (
+// 	addr = flag.String("addr", ":", os.Getenv("PORT"))
+// 	cert = flag.String("cert", "", "")
+// 	key  = flag.String("key", "", "")
+// )
 
-func Run() error {
-	flag.Parse()
+type APIServer struct {
+	Addr  string
+	sqlDB *sql.DB
+	redDB *redis.Client
+}
 
-	if *addr == ":" {
-		*addr = ":8080"
+func NewApiServer(Addr string, sqlDB *sql.DB, redDB *redis.Client) *APIServer {
+	return &APIServer{
+		Addr,
+		sqlDB,
+		redDB,
 	}
+}
 
-	return nil
+func (newapi *APIServer) Run() error {
+
+	app := fiber.New(fiber.Config{
+		CaseSensitive: true,
+	})
+
+	// Stores
+	userStore := user.NewStore(newapi.sqlDB, newapi.redDB)
+
+	// Handlers
+	userHandler := user.NewHandler(userStore)
+
+	// Register Routes
+	userHandler.RegisterRoutes("/user", app)
+
+	return app.Listen(newapi.Addr)
 }
