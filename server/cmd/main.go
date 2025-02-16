@@ -8,7 +8,7 @@ import (
 
 func main() {
 	addr := ":5000"
-	api1 := api.NewApiServer(addr, nil, nil)
+	api1 := api.NewApiServer(addr, nil, nil, "", "")
 
 	log.Printf("Server Starting at Address %s....", addr)
 
